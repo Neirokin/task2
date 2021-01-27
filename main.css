@@ -1,0 +1,14 @@
+table, td {
+  border: 1px solid black;
+}
+table {
+  margin-top: 10%;
+}
+td {
+  width: 100px;
+  height: 100px;
+  cursor: pointer;
+}
+.incorrect {
+  border-color: red;
+}
