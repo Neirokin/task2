@@ -5,9 +5,15 @@ var doc = document;
 //-------------- Флаги и глобальные переменные --------------
 
 // Флаг первого игрока
-let isFirstPlayer = true;
+let isFirstPlayerTurn = true;
 // Флаг победы
 let isVictory = false;
+// Флаг PVP
+let isPVP = true; 
+
+let player1 = 'X';
+let player2 = 'O';
+
 
 //-----------------------------------------------------------
 
@@ -15,91 +21,70 @@ let isVictory = false;
 
 //-------------------- Функции проверки  --------------------
 
-// Проверка победного хода на главной диагонали
-let checkMainDiagonal = function () {
-    if( table.rows[1].cells[1].innerText === table.rows[0].cells[0].innerText &&
-        table.rows[1].cells[1].innerText === table.rows[2].cells[2].innerText &&
-        table.rows[1].cells[1].innerText != '' ) {
-        return true;
+//Функция проверки победного хода
+let checkWinning = function (table, player) {
+    if( table[0].innerText == player && table[1].innerText == player && table[2].innerText == player ||
+        table[3].innerText == player && table[4].innerText == player && table[5].innerText == player ||
+        table[6].innerText == player && table[7].innerText == player && table[8].innerText == player ||
+        table[0].innerText == player && table[3].innerText == player && table[6].innerText == player ||
+        table[1].innerText == player && table[4].innerText == player && table[7].innerText == player ||
+        table[2].innerText == player && table[5].innerText == player && table[8].innerText == player ||
+        table[0].innerText == player && table[4].innerText == player && table[8].innerText == player ||
+        table[2].innerText == player && table[4].innerText == player && table[6].innerText == player ) {
+
+        if( isFirstPlayerTurn ) {
+            return -1;
+        }
+        else {
+            return 1;
+        }
     }
-} 
-
-// Проверка победного хода на побочной диагонали
-let checkSideDiagonal = function () {
-    if( table.rows[1].cells[1].innerText === table.rows[0].cells[2].innerText &&
-        table.rows[1].cells[1].innerText === table.rows[2].cells[0].innerText &&
-        table.rows[1].cells[1].innerText != '' ) {
-       return true;
-   }
-}
-
-// Проверка победного хода в строках
-let checkRows = function () {
-    for( let i = 0; i < 3; i++ ) {
-        let matchCount = 0;
-        for( let j = 0; j < 3; j++ ) {
-            if(j != 2 ) {
-                if( table.rows[i].cells[j].innerText === table.rows[i].cells[j + 1].innerText &&
-                    table.rows[i].cells[j].innerText != '' ) {
-                    matchCount++;
-                }
-            }
-            else {
-                if (table.rows[i].cells[j].innerText === table.rows[i].cells[j - 1].innerText &&
-                    table.rows[i].cells[j].innerText != '') {
-                    matchCount++;
-                }
-            }
-
-            if (matchCount === 3) {
-                return true;
-            }
-        }
-    } 
-}
-
-// Проверка победного хода в столбцах
-let checkCols = function () {
-    for( let j = 0; j < 3; j++ ) {
-        let matchCount = 0;
-        for( let i = 0; i < 3; i++ ) {
-            if(i != 2 ) {
-                if( table.rows[i].cells[j].innerText === table.rows[i + 1].cells[j].innerText &&
-                    table.rows[i].cells[j].innerText != '' ) {
-                    matchCount++;
-                }
-            }
-            else {
-                if (table.rows[i].cells[j].innerText === table.rows[i - 1].cells[j].innerText &&
-                    table.rows[i].cells[j].innerText != '') {
-                    matchCount++;
-                }
-            }
-
-            if (matchCount === 3) {
-                return true;
-            }
-        }
-    } 
+    else {
+        return false;
+    }
 }
 
 // Проверка на наличие ходов
-let checkMoves = function () {
-    if( !isVictory ) {
-        let movesCount = 0;
-        for( let i = 0; i < 3; i++ ) {
-            for( let j = 0; j < 3; j++ ) {
-                if( table.rows[i].cells[j].innerText != '') {
-                    movesCount++;
-                }
-            }
-        }
-
-        if( movesCount === 9) {
-            return true;
+let checkMoves = function (table) {
+    let availCells = {index: ''};
+    debugger;
+    for( let i = 0; i < 9; i++ ) {
+        if(table[i].innerText == '') {
+            availCells.index = i;   
         }
     }
+
+    return availCells;
 }
+
+//-----------------------------------------------------------
+
+
+
+//--------------------------- AI ----------------------------
+
+// let minimax = function (newTable, isFirstPlayer) {
+//     let isHuman = isFirstPlayer;
+//     let availCells = checkMoves();
+
+//     if ( checkWinning() == 1) {
+//         return 1;
+//     }
+//     else if ( checkWinning() == -1 ) {
+//         return -1;
+//     }
+//     else if ( availCells.length === 0 ) {
+//         return 0;
+//     }
+//     debugger;
+//     for( let i = 0; i < availCells.length; i++ ) {
+//         newTable[availCells[i]] = setMove();
+//     }
+// }
+
+// let moveAI = function () {
+//     let bestMove = minimax(table, isFirstPlayer);
+// }
 
 //-----------------------------------------------------------
 
@@ -107,42 +92,54 @@ let checkMoves = function () {
 
 //------------------- Основной функционал -------------------
 
-//Обработчик события onclick по ячейке.
-//Ставит "X" или "O" в зависимости от флага
-//is firstPlayer
-let setSymbol = function (event) {
-    // Проверка на наличие символа в ячейке
-    // и отсутствии победного хода
-    if( event.target.innerText == '' && !isVictory ) {
-        if( isFirstPlayer ) {
-            event.target.innerText = "X";
-        }
-        else {
-            event.target.innerText = "O";
-        }
-        getResult();
-        isFirstPlayer = !isFirstPlayer;
+// Обработчик события onclick по ячейке.
+// Ставит "X" или "O" в зависимости от флага
+// is firstPlayer
+let setSymbol = function (cell) {
+    if (isFirstPlayerTurn) {
+        cell.innerText = player1;
     }
     else {
-        incorrectAction(event.target);
-        setTimeout(incorrectAction, 700, event.target);
+        cell.innerText = player2;
     }
 }
 
-//Функция проверки победного хода
-let getResult = function () {
-    if( checkMainDiagonal() || checkSideDiagonal() ||
-                checkRows() || checkCols () ) {
-        isVictory = true;
-        if( isFirstPlayer ) {
-            alert('пабеда игрока1');
+let doMove = function (event) {
+    let cell = event.target;
+    // Проверка на наличие символа в ячейке
+    // и отсутствии победного хода
+    // debugger;
+    if (cell.innerText == '' && !isVictory) {
+        if (isPVP) {
+            setSymbol(cell);
         }
         else {
-            alert('пабеда игрока2');
+            setSymbol(cell);
+            moveAI();
         }
     }
-    else if( checkMoves() ) {
-        alert('опа, ничья');
+    else {
+        incorrectAction(cell);
+        setTimeout(incorrectAction, 700, cell);
+    }
+    
+    if (checkWinning(table, getPlayer()) != false) {
+        isVictory = true;
+    }
+    changePlayerTurn();
+}
+
+
+let changePlayerTurn = function () {
+    isFirstPlayerTurn = !isFirstPlayerTurn;
+}
+
+let getPlayer = function () {
+    if (isFirstPlayerTurn) { 
+        return player1;
+    }
+    else {
+        return player2;
     }
 }
 
@@ -156,29 +153,46 @@ let incorrectAction = function (elem) {
 // Если ходы ещё есть, то требуется согласие
 // пользователя для перезапуска
 let restart = function () {
-    if( !checkMoves() ) {
+    debugger;
+    if( checkMoves(table).length <= 9 ) {
         if( confirm('Вы уверены?') ) {
             isVictory = false;
-            for( let i = 0; i < 3; i++ ) {
-                for( let j = 0; j < 3; j++ ) {
-                    table.rows[i].cells[j].innerText = '';
-                }
+            isFirstPlayerTurn = true;
+            for (let i = 0; i < 9; i++) {
+                table[i].innerText = '';
             }
+        }
+    }
+    else {
+        isVictory = false;
+        isFirstPlayerTurn = true;
+        for (let i = 0; i < 9; i++) {
+            table[i].innerText = '';
         }
     }  
 }
 
-// Получаем таблицу (игровое поле) и вешаем на него
-// обработчик события setSymbol 
-let table = doc.getElementsByTagName('table')[0];
-for( let i = 0; i < 3; i ++ ) {
-    for( let j = 0; j < 3; j++ ) {
-        table.rows[i].cells[j].onclick = setSymbol;
-    }    
+let turnPVP = function () {
+    isPVP = true;
+}
+
+let turnPVC = function () {
+    isPVP = false;
+}
+
+// Получаем список ячеек (игровое поле) и вешаем на них
+// обработчик события doMove 
+let table = doc.getElementsByTagName('td');
+for (let i = 0; i < table.length; i++) {
+    table[i].onclick = doMove;
 }
 
 // Вешаем на кнопку обработчик события restart
 doc.getElementById('restartBtn').onclick = restart;
+// Вешаем на кнопку обработчик события pvp
+doc.getElementById('pvp').onclick = turnPVP;
+// Вешаем на кнопку обработчик события pvc
+doc.getElementById('pvc').onclick = turnPVC;
 
 //-----------------------------------------------------------
 
