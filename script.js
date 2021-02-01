@@ -14,7 +14,7 @@ let isPVP = false;
 let player1 = 'X';
 let player2 = 'O';
 
-let tableMap = [];
+// let tableMap = [];
 
 //-----------------------------------------------------------
 
@@ -59,16 +59,16 @@ function checkMoves(tableMap) {
 
 
 let fc = 0;
-// tableMap = ['O', '', 'X', 'X', '', 'X', '', 'O', 'O'];
+tableMap = ['O', '', '', 'O', 'X', 'X', '', '', ''];
 //--------------------------- AI ----------------------------
 
-function minimax(tableMap, isHumanTurn, alpha, beta) {
-    fc++;
+function minimax(tableMap, isHumanTurn, depth) {
+    // fc++;
     let availCells = checkMoves(tableMap); //массив свободных ячеек
-    if ( checkWinning(tableMap, getPlayer(isHumanTurn)) == 1) { //проверяет состояние доски
+    if ( checkWinning(tableMap, player2) == 1) { //проверяет состояние доски
         return {result: 1};
     }
-    else if ( checkWinning(tableMap, getPlayer(isHumanTurn)) == -1 ) {
+    else if ( checkWinning(tableMap, player1) == -1 ) {
         return {result: -1};
     }
     else if ( availCells.length === 0 ) {
@@ -81,7 +81,7 @@ function minimax(tableMap, isHumanTurn, alpha, beta) {
         setSymbol(tableMap, availCells[i], isHumanTurn);
 
         move.index = availCells[i];
-        let result = minimax(tableMap, !isHumanTurn, alpha, beta); //рекурсия
+        let result = minimax(tableMap, !isHumanTurn, depth); //рекурсия
 
         move.result = result.result;
         tableMap[availCells[i]] = '';
@@ -113,7 +113,7 @@ function minimax(tableMap, isHumanTurn, alpha, beta) {
 function doMoveAI(tableMap) {
     // debugger;
     let isHumanTurn = getPlayerTurn();
-    let aiMove = minimax(tableMap, isHumanTurn, -10, 10);
+    let aiMove = minimax(tableMap, isHumanTurn, 3);
     console.log(aiMove);
     setSymbol(tableMap, aiMove.index, getPlayerTurn());
 }
@@ -231,6 +231,7 @@ for (let i = 0; i < table.length; i++) {
     table[i].onclick = doMove;
 }
 
+updateTable();
 setTableMap();
 
 // Заполнение карты игрового поля
