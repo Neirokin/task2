@@ -9,11 +9,12 @@ let isFirstPlayerTurn = true;
 // Флаг победы
 let isVictory = false;
 // Флаг PVP
-let isPVP = true; 
+let isPVP = false; 
 
 let player1 = 'X';
 let player2 = 'O';
 
+let tableMap = [];
 
 //-----------------------------------------------------------
 
@@ -22,15 +23,15 @@ let player2 = 'O';
 //-------------------- Функции проверки  --------------------
 
 //Функция проверки победного хода
-let checkWinning = function (table, player) {
-    if( table[0].innerText == player && table[1].innerText == player && table[2].innerText == player ||
-        table[3].innerText == player && table[4].innerText == player && table[5].innerText == player ||
-        table[6].innerText == player && table[7].innerText == player && table[8].innerText == player ||
-        table[0].innerText == player && table[3].innerText == player && table[6].innerText == player ||
-        table[1].innerText == player && table[4].innerText == player && table[7].innerText == player ||
-        table[2].innerText == player && table[5].innerText == player && table[8].innerText == player ||
-        table[0].innerText == player && table[4].innerText == player && table[8].innerText == player ||
-        table[2].innerText == player && table[4].innerText == player && table[6].innerText == player ) {
+function checkWinning(tableMap, player) {
+    if( tableMap[0] == player && tableMap[1] == player && tableMap[2] == player ||
+        tableMap[3] == player && tableMap[4] == player && tableMap[5] == player ||
+        tableMap[6] == player && tableMap[7] == player && tableMap[8] == player ||
+        tableMap[0] == player && tableMap[3] == player && tableMap[6] == player ||
+        tableMap[1] == player && tableMap[4] == player && tableMap[7] == player ||
+        tableMap[2] == player && tableMap[5] == player && tableMap[8] == player ||
+        tableMap[0] == player && tableMap[4] == player && tableMap[8] == player ||
+        tableMap[2] == player && tableMap[4] == player && tableMap[6] == player ) {
 
         if( isFirstPlayerTurn ) {
             return -1;
@@ -39,18 +40,15 @@ let checkWinning = function (table, player) {
             return 1;
         }
     }
-    else {
-        return false;
-    }
 }
 
 // Проверка на наличие ходов
-let checkMoves = function (table) {
-    let availCells = {index: ''};
-    debugger;
+function checkMoves(tableMap) {
+    let availCells = [];
+    
     for( let i = 0; i < 9; i++ ) {
-        if(table[i].innerText == '') {
-            availCells.index = i;   
+        if(tableMap[i] == '') {
+            availCells.push(i);   
         }
     }
 
@@ -60,31 +58,65 @@ let checkMoves = function (table) {
 //-----------------------------------------------------------
 
 
-
+let fc = 0;
+// tableMap = ['O', '', 'X', 'X', '', 'X', '', 'O', 'O'];
 //--------------------------- AI ----------------------------
 
-// let minimax = function (newTable, isFirstPlayer) {
-//     let isHuman = isFirstPlayer;
-//     let availCells = checkMoves();
+function minimax(tableMap, isHumanTurn, alpha, beta) {
+    fc++;
+    let availCells = checkMoves(tableMap); //массив свободных ячеек
+    if ( checkWinning(tableMap, getPlayer(isHumanTurn)) == 1) { //проверяет состояние доски
+        return {result: 1};
+    }
+    else if ( checkWinning(tableMap, getPlayer(isHumanTurn)) == -1 ) {
+        return {result: -1};
+    }
+    else if ( availCells.length === 0 ) {
+        return {result: 0};
+    }
+    
+    let moves = [];
+    for( let i = 0; i < availCells.length; i++ ) { //делает ход, вызывает рекурсию
+        let move = {};
+        setSymbol(tableMap, availCells[i], isHumanTurn);
 
-//     if ( checkWinning() == 1) {
-//         return 1;
-//     }
-//     else if ( checkWinning() == -1 ) {
-//         return -1;
-//     }
-//     else if ( availCells.length === 0 ) {
-//         return 0;
-//     }
-//     debugger;
-//     for( let i = 0; i < availCells.length; i++ ) {
-//         newTable[availCells[i]] = setMove();
-//     }
-// }
+        move.index = availCells[i];
+        let result = minimax(tableMap, !isHumanTurn, alpha, beta); //рекурсия
 
-// let moveAI = function () {
-//     let bestMove = minimax(table, isFirstPlayer);
-// }
+        move.result = result.result;
+        tableMap[availCells[i]] = '';
+        moves.push(move);
+    }
+
+    let bestMoveIndex;
+    if (isHumanTurn) {
+        let bestResult = 10;
+        for (let i = 0; i < moves.length; i++) {
+            if (moves[i].result < bestResult) {
+                bestResult = moves[i].result;
+                bestMoveIndex = i; 
+            }
+        }
+    }
+    else {
+        let bestResult = -10;
+        for (let i = 0; i < moves.length; i++) {
+            if (moves[i].result > bestResult) {
+                bestResult = moves[i].result;
+                bestMoveIndex = i; 
+            }
+        }
+    }
+    return moves[bestMoveIndex];
+}
+
+function doMoveAI(tableMap) {
+    // debugger;
+    let isHumanTurn = getPlayerTurn();
+    let aiMove = minimax(tableMap, isHumanTurn, -10, 10);
+    console.log(aiMove);
+    setSymbol(tableMap, aiMove.index, getPlayerTurn());
+}
 
 //-----------------------------------------------------------
 
@@ -92,50 +124,57 @@ let checkMoves = function (table) {
 
 //------------------- Основной функционал -------------------
 
-// Обработчик события onclick по ячейке.
 // Ставит "X" или "O" в зависимости от флага
 // is firstPlayer
-let setSymbol = function (cell) {
+function setSymbol(tableMap, moveIndex, isFirstPlayerTurn) {
     if (isFirstPlayerTurn) {
-        cell.innerText = player1;
+        tableMap[moveIndex] = player1;
     }
     else {
-        cell.innerText = player2;
+        tableMap[moveIndex] = player2;
     }
 }
 
-let doMove = function (event) {
+function doMove(event) {
     let cell = event.target;
+    let moveIndex;
+
+    for(let i = 0; i < 9; i ++) {
+        if(table[i] === cell) {
+            moveIndex = i;
+        }
+    }
+    // debugger;
     // Проверка на наличие символа в ячейке
     // и отсутствии победного хода
-    // debugger;
-    if (cell.innerText == '' && !isVictory) {
-        if (isPVP) {
-            setSymbol(cell);
-        }
-        else {
-            setSymbol(cell);
-            moveAI();
-        }
+    if (tableMap[moveIndex] == '' && !isVictory) {
+        setSymbol(tableMap, moveIndex, getPlayerTurn());
     }
     else {
         incorrectAction(cell);
         setTimeout(incorrectAction, 700, cell);
     }
     
-    if (checkWinning(table, getPlayer()) != false) {
+    if (checkWinning(tableMap, getPlayer(isFirstPlayerTurn))) {
         isVictory = true;
     }
+
     changePlayerTurn();
+    updateTable();
+
+    if(!isPVP) {
+        doMoveAI(tableMap);
+        changePlayerTurn();
+        updateTable();
+    }
 }
 
-
-let changePlayerTurn = function () {
+function changePlayerTurn() {
     isFirstPlayerTurn = !isFirstPlayerTurn;
 }
 
-let getPlayer = function () {
-    if (isFirstPlayerTurn) { 
+function getPlayer(player1Turn) {
+    if (player1Turn) { 
         return player1;
     }
     else {
@@ -143,18 +182,20 @@ let getPlayer = function () {
     }
 }
 
+function getPlayerTurn() {
+    return isFirstPlayerTurn;
+}
 // Подсвечивает ячейку в случае выполнения
 // запрещённых действий
-let incorrectAction = function (elem) {
+function incorrectAction(elem) {
     elem.classList.toggle('incorrect');
 }
 
 // Обработчик события кнопки Restart
 // Если ходы ещё есть, то требуется согласие
 // пользователя для перезапуска
-let restart = function () {
-    debugger;
-    if( checkMoves(table).length <= 9 ) {
+function restart() {
+    if( checkMoves(tableMap).length > 0 && !isVictory ) {
         if( confirm('Вы уверены?') ) {
             isVictory = false;
             isFirstPlayerTurn = true;
@@ -170,13 +211,16 @@ let restart = function () {
             table[i].innerText = '';
         }
     }  
+    setTableMap();
 }
 
-let turnPVP = function () {
+function turnPVP() {
+    alert('pvp');
     isPVP = true;
 }
 
-let turnPVC = function () {
+function turnPVC() {
+    alert('pvc');
     isPVP = false;
 }
 
@@ -185,6 +229,24 @@ let turnPVC = function () {
 let table = doc.getElementsByTagName('td');
 for (let i = 0; i < table.length; i++) {
     table[i].onclick = doMove;
+}
+
+setTableMap();
+
+// Заполнение карты игрового поля
+function setTableMap() {
+    for (let i = 0; i < 9; i++) {
+        tableMap[i] = table[i].innerText;
+    }
+}
+
+//Обновление таблицы
+function updateTable() {
+    for (let i = 0; i < 9; i++) {
+        if(table[i].innerText != tableMap[i]) {
+            table[i].innerText = tableMap[i];
+        }
+    }
 }
 
 // Вешаем на кнопку обработчик события restart
