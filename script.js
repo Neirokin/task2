@@ -116,8 +116,12 @@ function restart() {
 }
 
 function turnPVP() {
-    alert('pvp');
+    // alert('pvp');
     isPVP = true;
+    doc.getElementsByClassName('table')[0].classList.toggle('d-none');
+    doc.getElementById('pvp').classList.toggle('buttonMoveRight');
+    doc.getElementById('pvc').classList.toggle('buttonMoveLeft');
+    doc.getElementById('logo').classList.toggle('reduceLogoSize');
 }
 
 function turnPVC() {

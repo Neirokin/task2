@@ -11,30 +11,43 @@
 </head>
 <body>
 	<div class="container">
-		<div class="row">
-			<div class="col-12 text-center">
-				<table class="mx-auto">
-					<tr>
-						<td></td>
-						<td></td>
-						<td></td>
-					</tr>
-					<tr>
-						<td></td>
-						<td></td>
-						<td></td>
-					</tr>
-					<tr>
-						<td></td>
-						<td></td>
-						<td></td>
-					</tr>
-				</table>
+		<div class="row justify-content-center text-center">
+			<div class="col-12 mt-4">
+				<h1 id="logo">Tic-Tac-Toe</h1>
 			</div>
-			<div class="col-12 text-center mt-4">
-				<buttont id="pvp" class="btn btn-dark">pvp</buttont>
-				<buttont id="restartBtn" class="btn btn-dark">Рестарт</buttont>
-				<buttont id="pvc" class="btn btn-dark">pvc</buttont>
+			<div class="gamemodeMenu w-100">
+				<div class="col-4 mx-auto">
+					<button id="pvp" class="btn btn-dark w-100">Player vs Player</button>
+				</div>
+				<div class="w-100"></div>
+				<div class="w-100"></div>
+				<div class="col-4 mx-auto">
+					<button id="pvc" class="btn btn-dark w-100">Player vs Computer</button>
+				</div>
+			</div>
+			<div class="table d-none">
+				<div class="col-12 text-center">
+					<table class="mx-auto">
+						<tr>
+							<td></td>
+							<td></td>
+							<td></td>
+						</tr>
+						<tr>
+							<td></td>
+							<td></td>
+							<td></td>
+						</tr>
+						<tr>
+							<td></td>
+							<td></td>
+							<td></td>
+						</tr>
+					</table>
+				</div>
+				<div class="col-6 text-center">
+					<button id="restartBtn" class="btn btn-dark">Рестарт</button>
+				</div>
 			</div>
 		</div>
 	</div>
