@@ -8,6 +8,10 @@ body {
   overflow-x: hidden;
 }
 
+html {
+  overflow-y: hidden;  
+}
+
 h1 {
   margin-top: 1vmax;
   margin-left: auto;
@@ -164,10 +168,11 @@ button:hover {
   font-size: 3rem;
 }
 
-.winMessage {
-  font-size: 3rem !important;
+body {
+  height: 800px;
 }
 
 .incorrect {
   border-color: #eee !important;
 }
+
