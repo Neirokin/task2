@@ -78,13 +78,13 @@ button {
 }
 
 .buttonMoveRight {
-  left: 200% !important;
-  transition: left .5s ease-out;
+  left: 400% !important;
+  transition: left 10.5s ease-in;
 }
 
 .buttonMoveLeft {
-  right: 200% !important;
-  transition: right .5s ease-out;
+  right: 400% !important;
+  transition: right 10.5s ease-in;
 }
 
 button:hover {
@@ -99,20 +99,75 @@ button:hover {
   background-color: #211 !important;
 }
 
-table, td {
-  border: 1px solid black;
+.table {
+  position: absolute;
+  top: 9rem;
+  left: 0;
+  right: 0;
+  visibility: hidden;
 }
 
-table {
-  margin-top: 10%;
+.tableAppear {
+  visibility: visible;
 }
 
-td {
-  width: 100px;
-  height: 100px;
+.tableAppear td {
+  width: 100px !important;
+  height: 100px !important;
+  transition: width .5s ease-out,
+              height .5s ease-out;
+}
+.table table {
+  border-collapse:  separate;
+}
+.table td {
+  width: 10px;
+  height: 10px;
   cursor: pointer;
+  border: 5px solid #353535;
+  font-size: 40px;
+  color: #eee;
+  vertical-align: middle !important;
+  transition: width .5s ease-out,
+              height .5s ease-out;
+  
+}
+
+.coloredCells td{  
+  animation: winCells 2.5s ease-in-out infinite alternate;
+}
+
+@keyframes winCells {
+  0% {
+      box-shadow: 0 0 2px 10px #FF00FF inset;
+  }
+  25% {
+      box-shadow: 0 0 2px 10px  #DC143C inset;
+  }
+  50% {
+       box-shadow: 0 0 2px 10px #00FF00 inset;
+  }
+  75% {
+       box-shadow: 0 0 2px 10px #FFFF00 inset;
+  }
+  100% {
+       box-shadow: 0 0 2px 10px #00FFFF inset;
+  }
+}
+
+.turnIndicatorContainer {
+  margin-bottom: 1%;  
+}
+
+#turnIndicator {
+  color: #eee;
+  font-size: 3rem;
+}
+
+.winMessage {
+  font-size: 3rem !important;
 }
 
 .incorrect {
-  border-color: red;
+  border-color: #eee !important;
 }

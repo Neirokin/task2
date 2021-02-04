@@ -50,6 +50,9 @@ function doMove(event) {
         updateTable();
         if (checkWinning(tableMap, getPlayer(isFirstPlayerTurn))) {
             isVictory = true;
+            doc.getElementsByClassName('table')[0].classList.add('coloredCells');
+            doc.getElementById('turnIndicator').classList.add('winMessage');
+            doc.getElementById('turnIndicator').innerText = getPlayer(isFirstPlayerTurn) + " win!"
             return;
         }
         changePlayerTurn();
@@ -58,6 +61,9 @@ function doMove(event) {
             updateTable();
             if (checkWinning(tableMap, getPlayer(isFirstPlayerTurn))) {
                 isVictory = true;
+                doc.getElementsByClassName('table')[0].classList.add('coloredCells');
+                doc.getElementById('turnIndicator').classList.add('winMessage');
+                doc.getElementById('turnIndicator').innerText = getPlayer(isFirstPlayerTurn) + " win!"
                 return;
             }
             changePlayerTurn();
@@ -71,6 +77,13 @@ function doMove(event) {
 
 function changePlayerTurn() {
     isFirstPlayerTurn = !isFirstPlayerTurn;
+    let turnIndicator = doc.getElementById('turnIndicator');
+    if (isFirstPlayerTurn) {
+        turnIndicator.innerText = 'X';
+    }
+    else {
+        turnIndicator.innerText = 'O';
+    }
 }
 
 function getPlayer(player1Turn) {
@@ -97,7 +110,7 @@ function incorrectAction(elem) {
 // пользователя для перезапуска
 function restart() {
     if( checkMoves(tableMap).length > 0 && !isVictory ) {
-        if( confirm('Вы уверены?') ) {
+        if( confirm('Are you sure?') ) {
             isVictory = false;
             isFirstPlayerTurn = true;
             for (let i = 0; i < 9; i++) {
@@ -111,24 +124,61 @@ function restart() {
         for (let i = 0; i < 9; i++) {
             table[i].innerText = '';
         }
-    }  
+    }
+    doc.getElementsByClassName('table')[0].classList.remove('coloredCells');
+    doc.getElementById('turnIndicator').innerText = 'X';
+    doc.getElementById('turnIndicator').classList.remove('winMessage');
     setTableMap();
 }
 
 function turnPVP() {
-    // alert('pvp');
     isPVP = true;
-    doc.getElementsByClassName('table')[0].classList.toggle('d-none');
-    doc.getElementById('pvp').classList.toggle('buttonMoveRight');
-    doc.getElementById('pvc').classList.toggle('buttonMoveLeft');
-    doc.getElementById('logo').classList.toggle('reduceLogoSize');
+    doc.getElementsByClassName('table')[0].classList.add('tableAppear');
+    doc.getElementById('pvp').classList.add('buttonMoveRight');
+    doc.getElementById('pvc').classList.add('buttonMoveLeft');
+    doc.getElementById('logo').classList.add('reduceLogoSize');
 }
 
 function turnPVC() {
-    alert('pvc');
     isPVP = false;
+    doc.getElementsByClassName('table')[0].classList.add('tableAppear');
+    doc.getElementById('pvp').classList.add('buttonMoveRight');
+    doc.getElementById('pvc').classList.add('buttonMoveLeft');
+    doc.getElementById('logo').classList.add('reduceLogoSize');
 }
 
+function backToMenu() {
+    if( checkMoves(tableMap).length > 0 && !isVictory ) {
+        if( confirm('Are you sure?') ) {
+            isVictory = false;
+            isFirstPlayerTurn = true;
+            for (let i = 0; i < 9; i++) {
+                table[i].innerText = '';
+            }
+            setTableMap();
+            doc.getElementsByClassName('table')[0].classList.remove('coloredCells');  
+            doc.getElementsByClassName('table')[0].classList.remove('tableAppear');
+            doc.getElementById('pvp').classList.remove('buttonMoveRight');
+            doc.getElementById('pvc').classList.remove('buttonMoveLeft');
+            doc.getElementById('logo').classList.remove('reduceLogoSize');
+        }
+    }
+    else {
+        isVictory = false;
+        isFirstPlayerTurn = true;
+        for (let i = 0; i < 9; i++) {
+            table[i].innerText = '';
+        }
+        setTableMap();
+        doc.getElementsByClassName('table')[0].classList.remove('coloredCells');  
+        doc.getElementsByClassName('table')[0].classList.remove('tableAppear');
+        doc.getElementById('pvp').classList.remove('buttonMoveRight');
+        doc.getElementById('pvc').classList.remove('buttonMoveLeft');
+        doc.getElementById('logo').classList.remove('reduceLogoSize');
+    }
+    doc.getElementById('turnIndicator').innerText = 'X';
+    doc.getElementById('turnIndicator').classList.remove('winMessage');
+}
 // Получаем список ячеек (игровое поле) и вешаем на них
 // обработчик события doMove 
 let table = doc.getElementsByTagName('td');
@@ -161,6 +211,8 @@ doc.getElementById('restartBtn').onclick = restart;
 doc.getElementById('pvp').onclick = turnPVP;
 // Вешаем на кнопку обработчик события pvc
 doc.getElementById('pvc').onclick = turnPVC;
+
+doc.getElementById('backBtn').onclick = backToMenu;
 
 //-----------------------------------------------------------
 
