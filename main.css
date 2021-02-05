@@ -6,12 +6,11 @@
 body {
   background-color: #111;
   color: #eee;
-  overflow-x: hidden;
-  height: 1000px;
 }
 
-html {
-  overflow-y: hidden;  
+.test {
+  overflow-x: hidden;
+  height: 800px;
 }
 
 
