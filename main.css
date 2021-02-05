@@ -8,7 +8,7 @@ body {
   color: #eee;
 }
 
-.test {
+.overflowWrapper {
   overflow-x: hidden;
   height: 700px;
 }
